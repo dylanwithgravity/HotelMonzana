@@ -13,7 +13,7 @@ struct RoomType: Equatable {
     var id: Int
     var name: String
     var shortName: String
-    var price: Double
+    var price: Int
     
     static var all: [RoomType] {
         return [RoomType(id: 0, name: "Two Queens", shortName: "2Q", price: 179),

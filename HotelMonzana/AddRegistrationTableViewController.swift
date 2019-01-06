@@ -8,7 +8,34 @@
 
 import UIKit
 
-class AddRegistrationTableViewController: UITableViewController {
+class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeTableViewControllerDelegate {
+    
+    // Create model object instance using computer property
+    var registration: Registration? {
+        guard let roomType = roomType else { return nil }
+        
+        let firstName = firstNameTextField.text ?? ""
+        let lastName = lastNameTextField.text ?? ""
+        let emailAddress = emailTextField.text ?? ""
+        let checkInDate = checkInDatePicker.date
+        let checkOutDate = checkOutDatePicker.date
+        let numberOfAdults = Int(numberOfAdultsStepper.value)
+        let numberOfChildren = Int(numberOfChildrenStepper.value)
+        let wifiSwitchState = wifiSwitch.isOn
+        
+        return Registration(firstName: firstName, lastName: lastName, guestEmail: emailAddress, checkInDate: checkInDate, checkOutDate: checkOutDate, numberOfAdults: numberOfAdults, numberofChildren: numberOfChildren, roomType: roomType, wifi: wifiSwitchState)
+        
+    }
+    
+    // Required delegate method
+    func didSelect(roomType: RoomType) {
+        // Set AddRegistrationTableViewController roomType property and update room type labels
+        self.roomType = roomType
+        updateRoomType()
+    }
+    
+    // Property to hold selected room type
+    var roomType: RoomType?
     
     // Store index path for pickers for easy comparison
     let checkInDatePickerCellIndexPath = IndexPath(row: 1, section: 1)
@@ -48,13 +75,15 @@ class AddRegistrationTableViewController: UITableViewController {
     // Section 3 outlet
     @IBOutlet weak var wifiSwitch: UISwitch!
     
+    // Section 4 outlet
+    @IBOutlet weak var roomTypeSelectedLabel: UILabel!
     
     
+    
+    // MARK: - Update view methods
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        updateDateViews()
-        updateNumberOfGuests()
         
         let midnightToday = Calendar.current.startOfDay(for: Date())
         // Set Check-In min date to today
@@ -62,9 +91,12 @@ class AddRegistrationTableViewController: UITableViewController {
         // Set Check-In date to start with today
         checkInDatePicker.date = midnightToday
         
+        // Initialize table view
+        updateDateViews()
+        updateNumberOfGuests()
+        updateRoomType()
 
     }
-    // MARK: - Update view methods
     func updateDateViews() {
         // Set Check-Out date Picker min date to 1 day after check-in date picker
         checkOutDatePicker.minimumDate = checkInDatePicker.date.addingTimeInterval(86400)
@@ -81,6 +113,14 @@ class AddRegistrationTableViewController: UITableViewController {
         numberOfChildrenLabel.text = "\(Int(numberOfChildrenStepper.value))"
     }
     
+    func updateRoomType() {
+        if let roomType = roomType {
+            roomTypeSelectedLabel.text = roomType.name
+        } else {
+            roomTypeSelectedLabel.text = "Not Selected"
+        }
+    }
+    
     // MARK: - Action methods
     @IBAction func datePickerValueChanged(_ sender: UIDatePicker) {
         updateDateViews()
@@ -90,29 +130,12 @@ class AddRegistrationTableViewController: UITableViewController {
         updateNumberOfGuests()
     }
    
-    @IBAction func doneBarButtonTapped(_ sender: UIBarButtonItem) {
-        let firstName = firstNameTextField.text ?? ""
-        let lastName = lastNameTextField.text ?? ""
-        let emailAddress = emailTextField.text ?? ""
-        let checkInDate = checkInDatePicker.date
-        let checkOutDate = checkOutDatePicker.date
-        let numberOfAdults = Int(numberOfAdultsStepper.value)
-        let numberOfChildren = Int(numberOfChildrenStepper.value)
-        let wifiSwitchState = wifiSwitch.isOn
-    
-        print("DONE BUTTON TAPPED")
-        print("First Name: \(firstName)")
-        print("Last Name: \(lastName)")
-        print("Email Address: \(emailAddress)")
-        print("Check-In date: \(checkInDate)")
-        print("Check-Out date: \(checkOutDate)")
-        print("Number of Adults: \(numberOfAdults)")
-        print("Number of Children: \(numberOfChildren)")
-        print("Wi-Fi switch state: \(wifiSwitchState)")
-    }
-    
     @IBAction func wifiSwitchChanged(_ sender: UISwitch) {
         // Implement later
+    }
+    
+    @IBAction func cancelButttonTapped(_ sender: UIBarButtonItem) {
+        dismiss(animated: true, completion: nil)
     }
     
     
@@ -179,14 +202,20 @@ class AddRegistrationTableViewController: UITableViewController {
         }
     }
     
-
-    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destination.
-        // Pass the selected object to the new view controller.
+        
+        if segue.identifier == "SelectRoomType" {
+            // Get the new view controller using segue.destination.
+
+            let destinationViewController = segue.destination as? SelectRoomTypeTableViewController
+            
+            // Pass the selected object to the new view controller.
+            destinationViewController?.delegate = self
+            destinationViewController?.roomType = roomType
+        }
     }
     
 
