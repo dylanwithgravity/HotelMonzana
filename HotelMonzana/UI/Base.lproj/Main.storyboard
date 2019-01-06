@@ -366,7 +366,7 @@
                         </barButtonItem>
                         <barButtonItem key="rightBarButtonItem" systemItem="done" id="vle-dA-A7Q">
                             <connections>
-                                <segue destination="Cy7-2S-IIM" kind="unwind" unwindAction="unwindFromAddRegistrationWithUnwindSegue:" id="c2B-O4-TQ2"/>
+                                <segue destination="Cy7-2S-IIM" kind="unwind" identifier="DoneUnwind" unwindAction="unwindFromAddRegistrationWithUnwindSegue:" id="c2B-O4-TQ2"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
@@ -467,6 +467,9 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="AgY-do-4sy" kind="show" identifier="EditRegistration" id="PVc-cP-Vnk"/>
+                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <connections>
@@ -519,4 +522,7 @@
             <point key="canvasLocation" x="-390" y="176"/>
         </scene>
     </scenes>
+    <inferredMetricsTieBreakers>
+        <segue reference="PVc-cP-Vnk"/>
+    </inferredMetricsTieBreakers>
 </document>

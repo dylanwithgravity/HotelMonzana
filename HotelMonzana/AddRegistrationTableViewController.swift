@@ -10,7 +10,8 @@ import UIKit
 
 class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeTableViewControllerDelegate {
     
-    // Create model object instance using computer property
+    var selectedRegistration: Registration?
+    // Create model object instance using computed property
     var registration: Registration? {
         guard let roomType = roomType else { return nil }
         
@@ -24,7 +25,6 @@ class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeT
         let wifiSwitchState = wifiSwitch.isOn
         
         return Registration(firstName: firstName, lastName: lastName, guestEmail: emailAddress, checkInDate: checkInDate, checkOutDate: checkOutDate, numberOfAdults: numberOfAdults, numberofChildren: numberOfChildren, roomType: roomType, wifi: wifiSwitchState)
-        
     }
     
     // Required delegate method
@@ -84,6 +84,11 @@ class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeT
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        if let registration = selectedRegistration {
+            roomType = registration.roomType
+            updateTableView(with: registration)
+            updateDateViews()
+        } else {
         
         let midnightToday = Calendar.current.startOfDay(for: Date())
         // Set Check-In min date to today
@@ -95,7 +100,7 @@ class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeT
         updateDateViews()
         updateNumberOfGuests()
         updateRoomType()
-
+        }
     }
     func updateDateViews() {
         // Set Check-Out date Picker min date to 1 day after check-in date picker
@@ -119,6 +124,20 @@ class AddRegistrationTableViewController: UITableViewController, SelectRoomTypeT
         } else {
             roomTypeSelectedLabel.text = "Not Selected"
         }
+    }
+    
+    func updateTableView(with registration: Registration) {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateStyle = .medium
+        firstNameTextField.text = registration.firstName
+        lastNameTextField.text = registration.lastName
+        emailTextField.text = registration.guestEmail
+        checkInDateLabel.text = dateFormatter.string(from: registration.checkInDate)
+        checkOutDateLabel.text = dateFormatter.string(from: registration.checkOutDate)
+        numberOfAdultsLabel.text = "\(registration.numberOfAdults)"
+        numberOfChildrenLabel.text = "\(registration.numberofChildren)"
+        wifiSwitch.isOn = registration.wifi
+        roomTypeSelectedLabel.text = registration.roomType.name
     }
     
     // MARK: - Action methods

@@ -54,20 +54,43 @@ class RegistrationTableViewController: UITableViewController {
     
 
     @IBAction func unwindFromAddRegistration(unwindSegue: UIStoryboardSegue) {
-        guard let addRegistrationTableViewController = unwindSegue.source as? AddRegistrationTableViewController, let registration = addRegistrationTableViewController.registration else { return }
         
-        registrations.append(registration)
-        tableView.reloadData()
+        guard unwindSegue.identifier == "DoneUnwind" else { return }
+        
+        let sourceViewController = unwindSegue.source as? AddRegistrationTableViewController
+        
+        if let registration = sourceViewController?.registration {
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
+                registrations[selectedIndexPath.row] = registration
+                tableView.reloadRows(at: [selectedIndexPath], with: .none)
+            } else {
+                let newIndexPath = IndexPath(row: registrations.count, section: 0)
+                registrations.append(registration)
+                tableView.insertRows(at: [newIndexPath], with: .none)
+            }
+        }
+//        guard let addRegistrationTableViewController = unwindSegue.source as? AddRegistrationTableViewController, let registration = addRegistrationTableViewController.registration else { return }
+//
+//        tableView.reloadData()
     }
 
-    /*
+    
     // MARK: - Navigation
 
     // In a storyboard-based application, you will often want to do a little preparation before navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "EditRegistration" {
+            let indexPath = tableView.indexPathForSelectedRow!
+            let registration = registrations[indexPath.row]
+            let navController = segue.destination as! UINavigationController
+            let addRegistrationTableViewController = navController.topViewController as! AddRegistrationTableViewController
+            addRegistrationTableViewController.selectedRegistration = registration
+            
+        }
         // Get the new view controller using segue.destination.
+        
         // Pass the selected object to the new view controller.
     }
-    */
+    
 
 }
